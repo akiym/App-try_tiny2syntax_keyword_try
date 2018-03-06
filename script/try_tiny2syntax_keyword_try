@@ -1,0 +1,6 @@
+#!perl
+use strict;
+use warnings;
+use App::try_tiny2syntax_keyword_try;
+
+exit(App::try_tiny2syntax_keyword_try->new->run(@ARGV));

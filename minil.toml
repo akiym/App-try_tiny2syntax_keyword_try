@@ -1,0 +1,6 @@
+name = "App-try_tiny2syntax_keyword_try"
+badges = ["travis"]
+authority="cpan:AKIYM"
+
+module_maker="ModuleBuildTiny"
+
