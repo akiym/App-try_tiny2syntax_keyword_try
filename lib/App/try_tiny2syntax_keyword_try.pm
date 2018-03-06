@@ -25,8 +25,10 @@ sub run {
 sub apply {
     my ($self, $doc) = @_;
 
-    $self->_apply_try_include($doc);
-    $self->_apply_try_block($doc);
+    my $applied = 0;
+    $self->_apply_try_include($doc) && $applied++;
+    $self->_apply_try_block($doc)   && $applied++;
+    return $applied;
 }
 
 sub _apply_try_include {
@@ -35,7 +37,7 @@ sub _apply_try_include {
     my $includes = $doc->find(sub {
         my $t = $_[1];
         $t->isa('PPI::Statement::Include') && $t->module eq 'Try::Tiny'
-    }) or return;
+    }) or return 0;
 
     for my $include (@$includes) {
         my $d = PPI::Document->new(\'use Syntax::Keyword::Try;');
@@ -44,6 +46,8 @@ sub _apply_try_include {
         $include->insert_after($new_include);
         $include->remove;
     }
+
+    return 1;
 }
 
 sub _apply_try_block {
@@ -52,7 +56,7 @@ sub _apply_try_block {
     my $tries = $doc->find(sub {
         my $t = $_[1];
         $t->isa('PPI::Token::Word') && $t->content eq 'try'
-    }) or return;
+    }) or return 0;
 
     for my $try (@$tries) {
         my @tokens = $try->parent->schildren;
@@ -83,6 +87,8 @@ sub _apply_try_block {
             }
         }
     }
+
+    return 1;
 }
 
 sub _replace_var {
